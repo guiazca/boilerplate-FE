@@ -1,4 +1,4 @@
-export const required = (value: string): boolean => {
-    return value.trim() !== '';
-  };
+export const required = (fieldName: string) => (value: string): boolean => {
+  return value.trim() !== '';
+};
   

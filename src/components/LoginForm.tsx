@@ -1,6 +1,8 @@
+// src/components/LoginForm.tsx
+
 import React from 'react';
 import FormField from './FormField';
-import { useStore } from '../hooks/useStore'; // Hook criado com useRef
+import { useStore } from '../hooks/useStore'; // Hook para gerenciar valor e validação com useRef
 import { useAuthStore } from '../store/useAuthStore'; // Store de autenticação
 import { required } from '../validation/required';
 import { minLength } from '../validation/minLength';
@@ -9,23 +11,22 @@ import { emailValidator } from '../validation/emailValidator';
 const LoginForm = () => {
   const { login } = useAuthStore(); // Função de login da authStore
 
-  // Usamos o hook `useStore` para gerenciar o estado do email
+  // Hook para gerenciar o campo email
   const emailField = useStore({
-    rules: [required, emailValidator], // Regras de validação para o campo de email
+    rules: [required('Email'), emailValidator], // Regras de validação para o email
   });
 
-  // Usamos o hook `useStore` para gerenciar o estado da senha
+  // Hook para gerenciar o campo senha
   const passwordField = useStore({
-    rules: [required, minLength(6)], // Regras de validação para o campo de senha
+    rules: [required('Senha'), minLength(6)], // Regras de validação para a senha
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!emailField.error && !passwordField.error) {
-      // Simula a obtenção de um token de autenticação
       const fakeToken = '123456'; 
-      login(fakeToken); // Chama a função login da authStore
+      login(fakeToken); // Simulação de login
       alert('Login bem-sucedido!');
     }
   };
@@ -42,7 +43,7 @@ const LoginForm = () => {
         value={emailField.value}
         onChange={emailField.setValue}
         error={emailField.error}
-        ref={emailField.inputRef} // Passando a ref do campo email
+        ref={emailField.inputRef} // Ref do campo email
       />
 
       {/* Campo de Senha */}
@@ -53,7 +54,7 @@ const LoginForm = () => {
         value={passwordField.value}
         onChange={passwordField.setValue}
         error={passwordField.error}
-        ref={passwordField.inputRef} // Passando a ref do campo senha
+        ref={passwordField.inputRef} // Ref do campo senha
       />
 
       <button type="submit">Entrar</button>

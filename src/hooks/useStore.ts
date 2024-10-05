@@ -5,20 +5,24 @@ import { useFieldStore } from '../store/useFieldStore';
 import { useValidationStore } from '../store/useValidationStore';
 
 interface UseStoreProps {
-  rules: Array<(value: string) => boolean>;
+  rules: Array<(value: string) => boolean | string>; // Regras de validação podem retornar um boolean ou uma string de erro
 }
 
 export const useStore = ({ rules }: UseStoreProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { setFieldValue, getFieldValue } = useFieldStore();
-  const { validateField, errors } = useValidationStore();
+  const { validateField, getError, setError } = useValidationStore();
 
   useEffect(() => {
     if (inputRef.current) {
-      const field = inputRef.current.name; // Pega o nome do campo automaticamente
+      const field = inputRef.current.name;
+
       const value = getFieldValue(field);
-      validateField(field, value, rules);
+
+      const errorMessage = validateField(field, value, rules);
+      
+      setError(field, errorMessage);
     }
   }, [inputRef.current?.value]);
 
@@ -26,7 +30,8 @@ export const useStore = ({ rules }: UseStoreProps) => {
     if (inputRef.current) {
       const field = inputRef.current.name;
       setFieldValue(field, value);
-      validateField(field, value, rules);
+      const errorMessage = validateField(field, value, rules);
+      setError(field, errorMessage);
     }
   };
 
@@ -34,6 +39,6 @@ export const useStore = ({ rules }: UseStoreProps) => {
     inputRef,
     setValue,
     value: inputRef.current ? getFieldValue(inputRef.current.name) : '',
-    error: inputRef.current ? errors[inputRef.current.name] : '',
+    error: inputRef.current ? getError(inputRef.current.name) : '',
   };
 };
