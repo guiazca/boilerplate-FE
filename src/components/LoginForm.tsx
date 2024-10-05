@@ -5,15 +5,12 @@ import FormField from './FormField';
 import { useStore } from '../hooks/useStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useAsync } from '../hooks/useAsync'; // Importa o hook useAsync
-import { useLoadingStore } from '../store/useLoadingStore';
 import { required } from '../validation/required';
 import { minLength } from '../validation/minLength';
 import { emailValidator } from '../validation/emailValidator';
-import { LoadingState } from 'constants/loadingState';
 
 const LoginForm = () => {
   const { login } = useAuthStore();
-  const { loadingState } = useLoadingStore(); // Estado de loading
 
   // Hook para gerenciar o campo email
   const emailField = useStore({
@@ -26,7 +23,7 @@ const LoginForm = () => {
   });
 
   // Função de login com gerenciamento de loading automático
-  const { execute } = useAsync(async () => {
+  const { execute, isLoading } = useAsync(async () => {
     const fakeToken: string = await new Promise(resolve =>
       setTimeout(() => resolve('123456'), 2000),
     );
@@ -47,7 +44,7 @@ const LoginForm = () => {
       <h2>Login</h2>
 
       {/* Exibe um spinner enquanto está carregando */}
-      {loadingState === LoadingState.LOADING && <div>Carregando...</div>}
+      {isLoading && <div>Carregando...</div>}
 
       {/* Campo de Email */}
       <FormField
@@ -71,7 +68,7 @@ const LoginForm = () => {
         ref={passwordField.inputRef} // Ref do campo senha
       />
 
-      <button type="submit" disabled={loadingState === LoadingState.LOADING}>
+      <button type="submit" disabled={isLoading}>
         Entrar
       </button>
     </form>

@@ -1,9 +1,11 @@
+// src/hooks/useAsync.ts
+
 import { useCallback } from 'react';
 import { useLoadingStore } from '../store/useLoadingStore';
 
 // Hook que gerencia o estado de loading para operações assíncronas
 export const useAsync = <T>(asyncFunction: () => Promise<T>) => {
-  const { startLoading, stopLoading } = useLoadingStore();
+  const { startLoading, stopLoading, isLoading } = useLoadingStore();
 
   // Função que gerencia o loading automaticamente
   const execute = useCallback(async () => {
@@ -16,5 +18,5 @@ export const useAsync = <T>(asyncFunction: () => Promise<T>) => {
     }
   }, [asyncFunction, startLoading, stopLoading]);
 
-  return { execute };
+  return { execute, isLoading };
 };

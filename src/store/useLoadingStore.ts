@@ -1,17 +1,14 @@
-// src/store/useLoadingStore.ts
-
-import { LoadingState } from 'constants/loadingState';
 import { create } from 'zustand';
 
 interface LoadingStore {
-  loadingState: LoadingState;
-  activeRequests: number; // Contador de requisições ativas
+  isLoading: boolean;
+  activeRequests: number;
   startLoading: () => void;
   stopLoading: () => void;
 }
 
 export const useLoadingStore = create<LoadingStore>(set => ({
-  loadingState: LoadingState.IDLE,
+  isLoading: false,
   activeRequests: 0, // Inicializa sem requisições ativas
 
   startLoading: () =>
@@ -19,7 +16,7 @@ export const useLoadingStore = create<LoadingStore>(set => ({
       const newActiveRequests = state.activeRequests + 1;
       return {
         activeRequests: newActiveRequests,
-        loadingState: LoadingState.LOADING, // Loading é ativado se houver ao menos uma operação
+        isLoading: true, // Define loading como true se houver ao menos uma requisição
       };
     }),
 
@@ -28,8 +25,7 @@ export const useLoadingStore = create<LoadingStore>(set => ({
       const newActiveRequests = state.activeRequests - 1;
       return {
         activeRequests: newActiveRequests,
-        loadingState:
-          newActiveRequests === 0 ? LoadingState.IDLE : LoadingState.LOADING, // Loading desativado se não houver operações
+        isLoading: newActiveRequests === 0 ? false : true, // Define loading como false se não houver mais requisições
       };
     }),
 }));
