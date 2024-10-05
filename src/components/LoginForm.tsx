@@ -1,39 +1,53 @@
+// src/components/LoginForm.tsx
+
 import React from 'react';
 import FormField from './FormField';
-import { useStore } from '../hooks/useStore'; // Hook para gerenciar valor e validação com debounce
-import { useAuthStore } from '../store/useAuthStore'; // Store de autenticação
+import { useStore } from '../hooks/useStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { useAsync } from '../hooks/useAsync'; // Importa o hook useAsync
+import { useLoadingStore } from '../store/useLoadingStore';
 import { required } from '../validation/required';
 import { minLength } from '../validation/minLength';
 import { emailValidator } from '../validation/emailValidator';
+import { LoadingState } from 'constants/loadingState';
 
 const LoginForm = () => {
-  const { login } = useAuthStore(); // Função de login da authStore
+  const { login } = useAuthStore();
+  const { loadingState } = useLoadingStore(); // Estado de loading
 
-  // Hook para gerenciar o campo email com debounce de 300ms
+  // Hook para gerenciar o campo email
   const emailField = useStore({
-    rules: [required('Email'), emailValidator], // Regras de validação para o email
-    debounceTime: 300, // Debounce de 300ms
+    rules: [required('Email'), emailValidator],
   });
 
-  // Hook para gerenciar o campo senha com debounce de 500ms
+  // Hook para gerenciar o campo senha
   const passwordField = useStore({
-    rules: [required('Senha'), minLength(6)], // Regras de validação para a senha
-    debounceTime: 500, // Debounce de 500ms
+    rules: [required('Senha'), minLength(6)],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Função de login com gerenciamento de loading automático
+  const { execute } = useAsync(async () => {
+    const fakeToken: string = await new Promise(resolve =>
+      setTimeout(() => resolve('123456'), 2000),
+    );
+    login(fakeToken); // Simula a função de login
+    alert('Login bem-sucedido!');
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!emailField.error && !passwordField.error) {
-      const fakeToken = '123456';
-      login(fakeToken); // Simulação de login
-      alert('Login bem-sucedido!');
+      await execute(); // Chama a função de login com loading automático
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
+
+      {/* Exibe um spinner enquanto está carregando */}
+      {loadingState === LoadingState.LOADING && <div>Carregando...</div>}
 
       {/* Campo de Email */}
       <FormField
@@ -57,7 +71,9 @@ const LoginForm = () => {
         ref={passwordField.inputRef} // Ref do campo senha
       />
 
-      <button type="submit">Entrar</button>
+      <button type="submit" disabled={loadingState === LoadingState.LOADING}>
+        Entrar
+      </button>
     </form>
   );
 };
