@@ -1,7 +1,25 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "target": "ES2020",                        // Especifica a versão do ECMAScript
+    "module": "ESNext",                        // Usa o sistema de módulo ESNext
+    "jsx": "react-jsx",                        // Suporte para JSX no React 17+
+    "strict": true,                            // Ativa o modo estrito para o TypeScript
+    "noImplicitAny": true,                     // Impede o uso de "any" implícito
+    "moduleResolution": "node",                // Resolve módulos usando a estratégia do Node.js
+    "esModuleInterop": true,                   // Habilita interoperabilidade entre módulos ES e CommonJS
+    "skipLibCheck": true,                      // Pula verificação de tipos de bibliotecas para acelerar a compilação
+    "forceConsistentCasingInFileNames": true,  // Garante uso consistente de maiúsculas/minúsculas nos imports
+    "allowSyntheticDefaultImports": true,      // Permite a importação padrão em módulos sem exportação default
+    "noImplicitReturns": true,                 // Impede que funções terminem sem retornar valor
+    "noFallthroughCasesInSwitch": true,        // Impede a omissão de `break` em cases de switch
+    "baseUrl": "./src",                        // Define o diretório base para resolver imports relativos
+    "paths": {                                 // Atalhos para paths de diretórios comuns
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@store/*": ["store/*"],
+      "@validation/*": ["validation/*"]
+    }
+  },
+  "include": ["src/**/*"],                     // Inclui todos os arquivos TypeScript no diretório `src`
+  "exclude": ["node_modules", "dist"]          // Exclui diretórios desnecessários
 }
