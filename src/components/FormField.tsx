@@ -1,5 +1,3 @@
-// src/components/FormField.tsx
-
 import React, { forwardRef } from 'react';
 
 interface FormFieldProps {
@@ -22,12 +20,12 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
           type={type}
           name={name} // O nome do campo será capturado automaticamente pela ref
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={e => onChange(e.target.value)}
         />
         {error && <p className="error">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
 export default FormField;
