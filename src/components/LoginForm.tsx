@@ -1,73 +1,41 @@
 // src/components/LoginForm.tsx
 
-import React from 'react';
-import FormField from './FormField';
-import { useStore } from '../hooks/useStore';
+import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { useAsync } from '../hooks/useAsync'; // Importa o hook useAsync
-import { required } from '../validation/required';
-import { minLength } from '../validation/minLength';
-import { emailValidator } from '../validation/emailValidator';
 
 const LoginForm = () => {
-  const { login } = useAuthStore();
-
-  // Hook para gerenciar o campo email
-  const emailField = useStore({
-    rules: [required('Email'), emailValidator],
-  });
-
-  // Hook para gerenciar o campo senha
-  const passwordField = useStore({
-    rules: [required('Senha'), minLength(6)],
-  });
-
-  // Função de login com gerenciamento de loading automático
-  const { execute, isLoading } = useAsync(async () => {
-    const fakeToken: string = await new Promise(resolve =>
-      setTimeout(() => resolve('123456'), 2000),
-    );
-    login(fakeToken); // Simula a função de login
-    alert('Login bem-sucedido!');
-  });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, isLoading, error } = useAuthStore(); // Acessa diretamente a store
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!emailField.error && !passwordField.error) {
-      await execute(); // Chama a função de login com loading automático
-    }
+    await login(username, password); // Chama a função de login
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-
-      {/* Exibe um spinner enquanto está carregando */}
-      {isLoading && <div>Carregando...</div>}
-
-      {/* Campo de Email */}
-      <FormField
-        label="Email"
-        type="email"
-        name="email"
-        value={emailField.value}
-        onChange={emailField.setValue}
-        error={emailField.error}
-        ref={emailField.inputRef} // Ref do campo email
-      />
-
-      {/* Campo de Senha */}
-      <FormField
-        label="Senha"
-        type="password"
-        name="password"
-        value={passwordField.value}
-        onChange={passwordField.setValue}
-        error={passwordField.error}
-        ref={passwordField.inputRef} // Ref do campo senha
-      />
-
+      {error && <div style={{ color: 'red' }}>{error}</div>}{' '}
+      {/* Exibe o erro se houver */}
+      {isLoading && <div>Carregando...</div>}{' '}
+      {/* Exibe o spinner de carregamento */}
+      <div>
+        <label>Usuário</label>
+        <input
+          type="text"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>Senha</label>
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+        />
+      </div>
       <button type="submit" disabled={isLoading}>
         Entrar
       </button>
